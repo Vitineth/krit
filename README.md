@@ -1,6 +1,8 @@
-# Krit　
+# Krit 
 
-![Wile](https://i.imgur.com/4I33ELV.png)
+<p align="center">
+   <img src="https://i.imgur.com/4I33ELV.png" width="256" height="256"/>
+</p>
 
 Meet **Wile** or *4c17c1a8-2e31-4c67-8a5e-e7cbbcbb17e6*. He is a male Krit that was produced during a run of the program on 17.10.09. However, that is not the full details of Wile as a creature:
 
