@@ -6,7 +6,7 @@
 
     <groupId>com.github.vitineth.game</groupId>
     <artifactId>krit</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>a1.0.0</version>
 
     <build>
         <plugins>
