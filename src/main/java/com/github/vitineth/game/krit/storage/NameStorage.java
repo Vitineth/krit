@@ -28,7 +28,7 @@ public class NameStorage {
     private static HashMap<Krit, String> map = new HashMap<>();
 
     public static void initialise() {
-        BufferedReader br = new BufferedReader(new InputStreamReader(NameStorage.class.getResourceAsStream("/names.txt")));
+        BufferedReader br = new BufferedReader(new InputStreamReader(NameStorage.class.getResourceAsStream("/uk_names.txt")));
         br.lines().forEach(l -> possibilities.add(l.substring(0, 1) + l.substring(1).toLowerCase()));
     }
 
