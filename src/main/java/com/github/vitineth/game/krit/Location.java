@@ -1,7 +1,7 @@
 package com.github.vitineth.game.krit;
 
 /**
- * Class Description
+ * A representation of an X and Y location
  * <p/>
  * File created by Ryan (vitineth).<br>
  * Created on 06/10/2017.
@@ -19,12 +19,19 @@ public class Location {
         this.y = y;
     }
 
-    public Location(Location location){
+    public Location(Location location) {
         this.x = location.x;
         this.y = location.y;
     }
 
-    public Location(Location location, int xO, int yO){
+    /**
+     * Creates a new version of the {@link Location} with the x and y offset by the xO and yO values respectively.
+     *
+     * @param location {@link Location} the base location from which to offset
+     * @param xO       int the X offset
+     * @param yO       int the Y offset
+     */
+    public Location(Location location, int xO, int yO) {
         this.x = location.x + xO;
         this.y = location.y + yO;
     }
