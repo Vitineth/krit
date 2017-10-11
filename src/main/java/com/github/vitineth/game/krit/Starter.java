@@ -35,8 +35,19 @@ public class Starter {
     public static void main(String[] args) {
         try {
             try {
-                UIManager.setLookAndFeel(new DarculaLaf());
-//            UIManager.setLookAndFeel(new NimbusLookAndFeel());
+                String[] s = new String[UIManager.getInstalledLookAndFeels().length + 1];
+                for (int i = 0; i < s.length - 1; i++) {
+                    s[i + 1] = UIManager.getInstalledLookAndFeels()[i].getName();
+                }
+                s[0] = "Darcula";
+
+                System.out.println(new UIManager.LookAndFeelInfo("Darcula", "com.bulenkov.darcula.DarculaLaf"));
+                int laf = JOptionPane.showOptionDialog(null, "Select LAF", "Select LAF", JOptionPane.OK_CANCEL_OPTION, 0, null, s, s[0]);
+                if (laf == 0) {
+                    UIManager.setLookAndFeel(new DarculaLaf());
+                } else {
+                    UIManager.setLookAndFeel(UIManager.getInstalledLookAndFeels()[laf - 1].getClassName());
+                }
             } catch (UnsupportedLookAndFeelException e) {
                 e.printStackTrace();
             }
