@@ -10,13 +10,16 @@ import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Polygon;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.font.FontRenderContext;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -31,9 +34,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class MapView extends Canvas implements Runnable, MouseListener {
 
     BufferedImage grid;
+    int textY = 0;
     private JFrame frame;
     private boolean running;
     private InspectView view;
+    private FontRenderContext frc = new FontRenderContext(null, true, true);
+    private DecimalFormat decimalFormat = new DecimalFormat("00000.00");
 
     public MapView(InspectView view) {
         this.view = view;
@@ -43,7 +49,6 @@ public class MapView extends Canvas implements Runnable, MouseListener {
         running = true;
         frame = new JFrame("Krit Map");
         frame.setSize(KritStorage.getSize().getWidth() * 10, KritStorage.getSize().getHeight() * 10);
-//        frame.setLocationRelativeTo(null);
         frame.setLayout(new BorderLayout());
         frame.add(this, BorderLayout.CENTER);
         frame.setLocation(view.getX() + view.getWidth(), view.getY());
@@ -70,11 +75,6 @@ public class MapView extends Canvas implements Runnable, MouseListener {
     @Override
     public void run() {
         long last = System.currentTimeMillis();
-//        try {
-//            System.in.read();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
         while (running) {
             if (!view.isPaused())
                 if (System.currentTimeMillis() - last >= 500) {
@@ -82,6 +82,37 @@ public class MapView extends Canvas implements Runnable, MouseListener {
                     view.update();
                 }
         }
+    }
+
+    public String formatInt(int value) {
+        return String.format("%05d", value);
+    }
+
+    public String getStatusText(int count, int aggressive, double tribeAverage, int tribeCount, double decayRateAverage, double decayFrequencyAverage) {
+        return "Count: " + formatInt(count) + " | " +
+                "Aggression Count: " + formatInt(aggressive) + " | " +
+                "Average Members per Tribe: " + decimalFormat.format(tribeAverage) + " | " +
+                "Tribe Count: " + formatInt(tribeCount) + " | " +
+                "Average Decay Rate: " + decimalFormat.format(decayRateAverage) + " | " +
+                "Average Decay Frequency: " + decimalFormat.format(decayFrequencyAverage);
+    }
+
+    public String getStatusText() {
+        int count = KritStorage.getCreatures().size();
+        int aggressive = (int) KritStorage.getCreatures().stream().filter(Krit::isAggressive).count();
+        int tribeCount = KritStorage.getTribes().size();
+        double tribeAverage = count / tribeCount;
+
+        double totalDecay = 0;
+        double totalFrequency = 0;
+        for (Krit k : KritStorage.getCreatures()) {
+            totalDecay += k.getDecayRate();
+            totalFrequency += k.getDecayFrequency();
+        }
+        double decayRateAverage = totalDecay / count;
+        double decayFrequencyAverage = totalFrequency / count;
+
+        return getStatusText(count, aggressive, tribeAverage, tribeCount, decayRateAverage, decayFrequencyAverage);
     }
 
     public void update() {
@@ -92,6 +123,9 @@ public class MapView extends Canvas implements Runnable, MouseListener {
 
         BufferStrategy bs = getBufferStrategy();
         Graphics g = bs.getDrawGraphics();
+
+            int halfHeight = (int) (g.getFont().getStringBounds("Count: 000000 - Aggression Count: 000000 - Average Members per Tribe: 00000 - Tribe Count: 000000 - Average Decay Rate: 0000.00 - Average Decay Frequency: 0000.00", frc).getHeight() / 2);
+            textY = ((getHeight() - 15) + 10) - halfHeight;
 
         g.setColor(new Color(49, 51, 54));
         g.fillRect(0, 0, getWidth(), getHeight());
@@ -133,9 +167,9 @@ public class MapView extends Canvas implements Runnable, MouseListener {
         });
 
         g.setColor(new Color(0, 0, 0, 126));
-        g.fillRect(0, getHeight() - 20, getWidth(), 20);
+        g.fillRect(0, getHeight() - 32, getWidth(), 40);
         g.setColor(Color.WHITE);
-        g.drawString(copy.size() + "", 0, getHeight());
+        g.drawString(getStatusText(), 10, textY);
 
 
         KritStorage.prune();

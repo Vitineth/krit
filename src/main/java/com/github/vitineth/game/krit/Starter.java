@@ -78,7 +78,9 @@ public class Starter {
             List<Tribe> tribes = new ArrayList<>();
             List<Location> tribeLocations = new ArrayList<>();
             for (int i = 0; i < GlobalStorage.RANDOM.nextInt(5) + 3; i++) {
-                tribes.add(new Tribe());
+                Tribe tribe = new Tribe();
+                KritStorage.addTribe(tribe);
+                tribes.add(tribe);
                 tribeLocations.add(new Location(GlobalStorage.RANDOM.nextInt(width), GlobalStorage.RANDOM.nextInt(height)));
             }
 

@@ -2,6 +2,7 @@ package com.github.vitineth.game.krit.storage;
 
 import com.github.vitineth.game.krit.Krit;
 import com.github.vitineth.game.krit.Location;
+import com.github.vitineth.game.krit.Tribe;
 import com.github.vitineth.game.krit.utils.Size;
 
 import java.awt.Dimension;
@@ -22,6 +23,7 @@ import java.util.UUID;
 public class KritStorage {
 
     private static HashMap<UUID, Krit> mappings = new HashMap<>();
+    private static List<Tribe> tribes = new ArrayList<>();
     private static List<Krit> creatures = new ArrayList<>();
     private static Krit[][] map;
     private static Size size;
@@ -30,7 +32,7 @@ public class KritStorage {
         return mappings;
     }
 
-    public static void prune(){
+    public static void prune() {
         List<Krit> creaturesCopy = new ArrayList<>();
         HashMap<UUID, Krit> mappingsCopy = new HashMap<>();
         Krit[][] mapCopy = new Krit[size.getHeight()][size.getWidth()];
@@ -55,15 +57,23 @@ public class KritStorage {
         return mappings.get(uuid);
     }
 
-    public static Krit get(int x, int y){
+    public static Krit get(int x, int y) {
         return map[y][x];
     }
 
-    public static boolean isValid(int x, int y){
+    public static boolean isValid(int x, int y) {
         return x >= 0 && y >= 0 && x < size.getWidth() && y < size.getHeight();
     }
 
-    public static boolean isFree(Location location){
+    public static void addTribe(Tribe tribe) {
+        tribes.add(tribe);
+    }
+
+    public static List<Tribe> getTribes(){
+        return tribes;
+    }
+
+    public static boolean isFree(Location location) {
         return isFree(location.getX(), location.getY());
     }
 
@@ -71,7 +81,7 @@ public class KritStorage {
         return isValid(x, y) && get(x, y) == null;
     }
 
-    public static void set(Krit krit, Location location){
+    public static void set(Krit krit, Location location) {
         set(krit, location.getX(), location.getY());
     }
 
@@ -79,19 +89,19 @@ public class KritStorage {
         return size;
     }
 
-    public static void clear(Location location){
+    public static void clear(Location location) {
         clear(location.getY(), location.getY());
     }
 
-    public static Krit get(Location location){
+    public static Krit get(Location location) {
         return get(location.getX(), location.getY());
     }
 
-    public static void clear(int x, int y){
+    public static void clear(int x, int y) {
         map[y][x] = null;
     }
 
-    public static void set(Krit krit, int x, int y){
+    public static void set(Krit krit, int x, int y) {
         map[y][x] = krit;
     }
 
