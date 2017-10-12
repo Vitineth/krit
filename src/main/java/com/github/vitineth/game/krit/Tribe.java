@@ -154,7 +154,7 @@ public class Tribe {
      * Returns the average location of the tibe. This will sum the x and y of every member of the tribe and then divide
      * by the number of members. If the tribe is empty it will return an error
      *
-     * @return {@link} The location of the rounded center of the tribe
+     * @return {@link Location} The location of the rounded center of the tribe
      */
     public Location getAverageLocation() {
         int xTotal = 0;

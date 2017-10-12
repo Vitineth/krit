@@ -19,7 +19,35 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * Class Description
+ * The representation of the living entity that populates the world of the game. Krits work off a set of 23 rules (as
+ * of 2017-10-11):
+ * <ol>
+ * <li>Only one Krit can occupy one tile at a time.</li>
+ * <li>Krits can only move within a 1 square radius (x and y offset between -1 and 1).</li>
+ * <li>A Krits health will decay at a constant rate which will be determined at its birth</li>
+ * <li>At each update, each expressed genetic trait will receive an update which can edit the Krits details and each unexpressed trait will have its triggers ran</li>
+ * <li>If a Krit is within 5 of a member of another tribe for 3 or more turns, it will become aggressive. If it is separated (greater than 5 away) from another tribe for 3 turns it will become passive</li>
+ * <li>When a Krit is aggressive, it will identify the closest member of another tribe and move towards it. If it is next to it, it will attempt to strike for between 1 and 4 damage with ~80% chance of hitting.</li>
+ * <li>If the creature is not aggressive, it will try to move towards the averaged center of the tribe or pick a random x and y offset between -1 and 1 with a chance of 30%.</li>
+ * <li>Pregnancy will take 9 updates to complete.</li>
+ * <li>A female krit can have between 1 and 3 children</li>
+ * <li>A female krit has a ~0.8% chance of losing a child per update during pregnancy</li>
+ * <li>A child should be placed within a 1 block radius of the parent and should be lost if a space is not available.</li>
+ * <li>A child krit should determine its new health by averaging the parents values with a jitter of between -4 and 4 (including decimals).</li>
+ * <li>A child krit should determine its new decay rate by averaging the parents with jitter of -0.2 to 0.2 for the decay rate and -3 to 3 for its frequency.</li>
+ * <li>A child krit should have a randomly assigned sex</li>
+ * <li>A child krit should take the average of the parents colours with a jitter of -20 to 20 for each of the r g and b values.</li>
+ * <li>A child krit should have a minimum decay rate of 0.2/2 (set if the values are set below 0)</li>
+ * <li>A child should take all dominant genes of the parents</li>
+ * <li>A child should take all recessive genes which exist on both the parents</li>
+ * <li>A child should take the tribe of the mother</li>
+ * <li>A krit has ~100% chance of mating with its mate when adjacent to each other</li>
+ * <li>A krit has ~60% chance of mating with a member of its own tribe if it does not have a Mate</li>
+ * <li>A krit has a ~40% chance of mating with a member of another tribe if it does not have a mate</li>
+ * <li>If a krit does not have a mate and mates with another krit, that krit will become its mate 　</li>
+ * </ol>
+ *
+ *
  * <p/>
  * File created by Ryan (vitineth).<br>
  * Created on 06/10/2017.
@@ -342,7 +370,7 @@ public class Krit {
     }
 
     public void setLocation(Location location) {
-        if (location == null)System.out.println("WHAT");
+        if (location == null) System.out.println("WHAT");
         KritStorage.clear(this.location);
         KritStorage.set(this, location);
         this.location = location;
