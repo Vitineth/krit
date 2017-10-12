@@ -34,3 +34,33 @@ Optionally, the Krits may try to avoid the members of the tribe that have the vi
 
 ## Tribal Relations
 In an attempt to change how aggression works, tribes will begin developing relations with each other. When the relationship between two tribes is high, they will avoid being aggressive and after the members stop being aggressive they will become neutral.Relations will remain neutral by default and will be improved by mating across tribes but it will be damaged by aggression and random chance.
+
+## Resources
+`TODO(@vitineth): 2017/10/12 10:15`
+
+## Aggression Exemptions
+`TODO(@vitineth): 2017/10/12 10:15`
+
+## Family Trees
+`TODO(@vitineth): 2017/10/12 10:15`
+
+## Configuration Windows
+`TODO(@vitineth): 2017/10/12 10:15`
+
+### Drawing
+`TODO(@vitineth): 2017/10/12 10:15`
+
+## Natural Disasters
+`TODO(@vitineth): 2017/10/12 10:15`
+
+## Property Inspection Window
+`TODO(@vitineth): 2017/10/12 10:15`
+
+## Moving Upgrades
+`TODO(@vitineth): 2017/10/12 10:15`
+
+## Genetic Upgrades
+`TODO(@vitineth): 2017/10/12 10:15`
+
+## Bug Fixes
+`TODO(@vitineth): 2017/10/12 10:15`
