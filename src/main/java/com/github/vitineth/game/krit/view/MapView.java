@@ -78,8 +78,12 @@ public class MapView extends Canvas implements Runnable, MouseListener {
         while (running) {
             if (!view.isPaused())
                 if (System.currentTimeMillis() - last >= 500) {
-                    update();
-                    view.update();
+                    if (view.isResetCalled()) {
+                        view.resetClear();
+                    } else {
+                        update();
+                        view.update();
+                    }
                 }
         }
     }
@@ -124,8 +128,8 @@ public class MapView extends Canvas implements Runnable, MouseListener {
         BufferStrategy bs = getBufferStrategy();
         Graphics g = bs.getDrawGraphics();
 
-            int halfHeight = (int) (g.getFont().getStringBounds("Count: 000000 - Aggression Count: 000000 - Average Members per Tribe: 00000 - Tribe Count: 000000 - Average Decay Rate: 0000.00 - Average Decay Frequency: 0000.00", frc).getHeight() / 2);
-            textY = ((getHeight() - 15) + 10) - halfHeight;
+        int halfHeight = (int) (g.getFont().getStringBounds("Count: 000000 - Aggression Count: 000000 - Average Members per Tribe: 00000 - Tribe Count: 000000 - Average Decay Rate: 0000.00 - Average Decay Frequency: 0000.00", frc).getHeight() / 2);
+        textY = ((getHeight() - 15) + 10) - halfHeight;
 
         g.setColor(new Color(49, 51, 54));
         g.fillRect(0, 0, getWidth(), getHeight());
@@ -135,8 +139,6 @@ public class MapView extends Canvas implements Runnable, MouseListener {
         CopyOnWriteArrayList<Krit> copy = new CopyOnWriteArrayList<>(KritStorage.getCreatures());
         copy.stream().forEach(Krit::update);
         copy.stream().forEach(k -> {
-//            ##################
-
             int leftX = k.getLocation().getX() * 10;
             int rightX = leftX + 9;
             int topY = k.getLocation().getY() * 10;

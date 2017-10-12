@@ -106,6 +106,15 @@ public class KritStorage {
     }
 
     public static void initialise(Size dimension) {
+        mappings = null;
+        tribes = null;
+        creatures = null;
+        map = null;
+        size = null;
+
+        mappings = new HashMap<>();
+        tribes = new ArrayList<>();
+        creatures = new ArrayList<>();
         map = new Krit[dimension.getHeight()][dimension.getWidth()];
         size = dimension;
     }

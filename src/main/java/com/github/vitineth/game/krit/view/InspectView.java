@@ -2,20 +2,23 @@ package com.github.vitineth.game.krit.view;
 
 import com.github.vitineth.game.krit.Krit;
 import com.github.vitineth.game.krit.Location;
+import com.github.vitineth.game.krit.Starter;
+import com.github.vitineth.game.krit.storage.KritStorage;
 import com.github.vitineth.game.krit.storage.NameStorage;
+import com.github.vitineth.game.krit.view.util.GBCBuilder;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
-import javax.swing.plaf.nimbus.NimbusLookAndFeel;
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -61,6 +64,7 @@ public class InspectView extends JFrame {
     private JTextField proximity;
     private JTextField updates;
     private Krit krit;
+    private boolean resetCalled;
 
     public InspectView() throws HeadlessException {
         setTitle("Inspection");
@@ -79,10 +83,37 @@ public class InspectView extends JFrame {
     }
 
     public void setup() {
+        JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane.addTab("Inspect", setupInspect());
+        tabbedPane.addTab("Manage", setupConfig());
 
+        add(tabbedPane, new GBCBuilder().x(0).y(0).wx(1d).wy(1d).f(GridBagConstraints.BOTH).build());
+    }
+
+    public JPanel setupConfig(){
+        JPanel p = new JPanel();
+        p.setLayout(new GridBagLayout());
+
+        GBCBuilder b = new GBCBuilder().x(0).y(0).wx(1).wy(1).f(GridBagConstraints.HORIZONTAL).a(GridBagConstraints.NORTH);
+
+        JButton reset = new JButton("Restart");
+        reset.setAction(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                resetCalled = true;
+            }
+        });
+        p.add(reset, b.build());
+        reset.setText("Restart");
+
+        return p;
+    }
+
+    public JPanel setupInspect() {
+        JPanel p = new JPanel();
+        p.setLayout(new GridBagLayout());
 
         JButton freeze = new JButton("Freeze");
-        freeze.setText("Unfreeze");
         freeze.setAction(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -96,6 +127,7 @@ public class InspectView extends JFrame {
             }
         });
         GridBagConstraints freezeGBC = new GBCBuilder().x(0).y(0).w(2).h(1).f(GridBagConstraints.HORIZONTAL).build();
+
 
         GBCBuilder base = new GBCBuilder().x(0).y(1).a(GridBagConstraints.WEST).i(new Insets(0, 10, 0, 10));
 
@@ -150,43 +182,44 @@ public class InspectView extends JFrame {
         JLabel proximityLabel = new JLabel("Proximity: ");
         JLabel updatesLabel = new JLabel("Updates: ");
 
-        add(freeze, freezeGBC);
-        add(basicDetails, base.copy().y(1).build());
-        add(idLabel, base.copy().y(2).build());
-        add(locationLabel, base.copy().y(3).build());
-        add(originLabel, base.copy().y(4).build());
+        p.add(freeze, freezeGBC);
+        freeze.setText("Unfreeze");
+        p.add(basicDetails, base.copy().y(1).build());
+        p.add(idLabel, base.copy().y(2).build());
+        p.add(locationLabel, base.copy().y(3).build());
+        p.add(originLabel, base.copy().y(4).build());
 
-        add(healthDetails, base.copy().y(5).build());
-        add(healthLabel, base.copy().y(6).build());
-        add(intialHealthLabel, base.copy().y(7).build());
-        add(decayLabel, base.copy().y(8).build());
+        p.add(healthDetails, base.copy().y(5).build());
+        p.add(healthLabel, base.copy().y(6).build());
+        p.add(intialHealthLabel, base.copy().y(7).build());
+        p.add(decayLabel, base.copy().y(8).build());
 
-        add(miscDetails, base.copy().y(9).build());
-        add(sexLabel, base.copy().y(10).build());
-        add(colorLabel, base.copy().y(11).build());
-        add(aggressiveLabel, base.copy().y(12).build());
-        add(tribeLabel, base.copy().y(13).build());
+        p.add(miscDetails, base.copy().y(9).build());
+        p.add(sexLabel, base.copy().y(10).build());
+        p.add(colorLabel, base.copy().y(11).build());
+        p.add(aggressiveLabel, base.copy().y(12).build());
+        p.add(tribeLabel, base.copy().y(13).build());
 
-        add(familialDetails, base.copy().y(14).build());
-        add(matedLabel, base.copy().y(15).build());
-        add(mateLabel, base.copy().y(16).build());
-        add(pregnantLabel, base.copy().y(17).build());
-        add(termLabel, base.copy().y(18).build());
-        add(childrenLabel, base.copy().y(19).build());
-        add(parentsLabel, base.copy().y(20).build());
+        p.add(familialDetails, base.copy().y(14).build());
+        p.add(matedLabel, base.copy().y(15).build());
+        p.add(mateLabel, base.copy().y(16).build());
+        p.add(pregnantLabel, base.copy().y(17).build());
+        p.add(termLabel, base.copy().y(18).build());
+        p.add(childrenLabel, base.copy().y(19).build());
+        p.add(parentsLabel, base.copy().y(20).build());
 
-        add(childrenDetails, base.copy().y(21).build());
-        add(childrenCountLabel, base.copy().y(22).build());
-        add(childrenIdsLabel, base.copy().y(23).build());
+        p.add(childrenDetails, base.copy().y(21).build());
+        p.add(childrenCountLabel, base.copy().y(22).build());
+        p.add(childrenIdsLabel, base.copy().y(23).build());
 
-        add(geneticDetails, base.copy().y(24).build());
-        add(geneticCountLabel, base.copy().y(25).build());
-        add(geneticIdsLabel, base.copy().y(26).build());
+        p.add(geneticDetails, base.copy().y(24).build());
+        p.add(geneticCountLabel, base.copy().y(25).build());
+        p.add(geneticIdsLabel, base.copy().y(26).build());
 
-        add(otherDetails, base.copy().y(27).build());
-        add(separationLabel, base.copy().y(28).build());
-        add(proximityLabel, base.copy().y(29).build());
-        add(updatesLabel, base.copy().y(30).build());
+        p.add(otherDetails, base.copy().y(27).build());
+        p.add(separationLabel, base.copy().y(28).build());
+        p.add(proximityLabel, base.copy().y(29).build());
+        p.add(updatesLabel, base.copy().y(30).build());
 
         id = new JTextField();
         location = new JTextField();
@@ -219,9 +252,7 @@ public class InspectView extends JFrame {
         updates = new JTextField();
 
         JButton family = new JButton("Export Family Tree");
-        family.addActionListener((event) -> {
-            createGraph();
-        });
+        family.addActionListener((event) -> createGraph());
 
         id.setEditable(false);
         location.setEditable(false);
@@ -248,49 +279,51 @@ public class InspectView extends JFrame {
         updates.setEditable(false);
 
         base = base.copy().x(1).y(1).a(GridBagConstraints.WEST).f(GridBagConstraints.HORIZONTAL).wx(1d);
-        add(id, base.copy().y(2).build());
+        p.add(id, base.copy().y(2).build());
 
-        add(location, base.copy().y(3).build());
-        add(origin, base.copy().y(4).build());
+        p.add(location, base.copy().y(3).build());
+        p.add(origin, base.copy().y(4).build());
 
-        add(health, base.copy().y(6).build());
-        add(initialHealth, base.copy().y(7).build());
-        add(decay, base.copy().y(8).build());
+        p.add(health, base.copy().y(6).build());
+        p.add(initialHealth, base.copy().y(7).build());
+        p.add(decay, base.copy().y(8).build());
 
-        add(sex, base.copy().y(10).build());
-        add(color, base.copy().y(11).build());
-        add(aggressive, base.copy().y(12).build());
-        add(tribe, base.copy().y(13).build());
+        p.add(sex, base.copy().y(10).build());
+        p.add(color, base.copy().y(11).build());
+        p.add(aggressive, base.copy().y(12).build());
+        p.add(tribe, base.copy().y(13).build());
 
-        add(mated, base.copy().y(15).build());
-        add(mate, base.copy().y(16).build());
-        add(pregnant, base.copy().y(17).build());
-        add(term, base.copy().y(18).build());
-        add(children, base.copy().y(19).build());
-        add(parents, base.copy().y(20).build());
+        p.add(mated, base.copy().y(15).build());
+        p.add(mate, base.copy().y(16).build());
+        p.add(pregnant, base.copy().y(17).build());
+        p.add(term, base.copy().y(18).build());
+        p.add(children, base.copy().y(19).build());
+        p.add(parents, base.copy().y(20).build());
 
-        add(childrenCount, base.copy().y(22).build());
-        add(new JScrollPane(childrenIds), base.copy().y(23).f(GridBagConstraints.BOTH).wy(1d).build());
+        p.add(childrenCount, base.copy().y(22).build());
+        p.add(new JScrollPane(childrenIds), base.copy().y(23).f(GridBagConstraints.BOTH).wy(1d).build());
 
-        add(geneticCount, base.copy().y(25).build());
-        add(new JScrollPane(geneticIds), base.copy().y(26).f(GridBagConstraints.BOTH).wy(1d).build());
+        p.add(geneticCount, base.copy().y(25).build());
+        p.add(new JScrollPane(geneticIds), base.copy().y(26).f(GridBagConstraints.BOTH).wy(1d).build());
 
-        add(separation, base.copy().y(28).build());
-        add(proximity, base.copy().y(29).build());
-        add(updates, base.copy().y(30).build());
-        add(family, base.copy().y(31).i(new Insets(0, 10, 10, 10)).build());
+        p.add(separation, base.copy().y(28).build());
+        p.add(proximity, base.copy().y(29).build());
+        p.add(updates, base.copy().y(30).build());
+        p.add(family, base.copy().y(31).i(new Insets(0, 10, 10, 10)).build());
+
+        return p;
     }
 
-    public Krit getHighestParent(Krit krit){
+    public Krit getHighestParent(Krit krit) {
         Krit k = krit;
-        while(k.getParents() != null && k.getParents()[0] != null){
+        while (k.getParents() != null && k.getParents()[0] != null) {
             k = k.getParents()[0];
         }
 
         return k;
     }
 
-    public void createGraph(){
+    public void createGraph() {
         Krit highestMother = getHighestParent(krit);
 
         // add mother and father with link
@@ -417,80 +450,14 @@ public class InspectView extends JFrame {
         proximity.setText(krit.getProximityTurns() + "");
         updates.setText(krit.getUpdateCount() + "");
     }
+
+    public boolean isResetCalled() {
+        return resetCalled;
+    }
+
+    public void resetClear(){
+        Starter.initialize();
+        resetCalled = false;
+    }
 }
 
-class GBCBuilder {
-
-    private GridBagConstraints gbc;
-
-    public GBCBuilder() {
-        gbc = new GridBagConstraints();
-    }
-
-    public GBCBuilder copy() {
-        GBCBuilder builder = new GBCBuilder();
-        builder.gbc = (GridBagConstraints) gbc.clone();
-        return builder;
-    }
-
-    public GBCBuilder x(int x) {
-        gbc.gridx = x;
-        return this;
-    }
-
-    public GBCBuilder y(int y) {
-        gbc.gridy = y;
-        return this;
-    }
-
-    public GBCBuilder a(int anchor) {
-        gbc.anchor = anchor;
-        return this;
-    }
-
-    public GBCBuilder w(int width) {
-        gbc.gridwidth = width;
-        return this;
-    }
-
-    public GBCBuilder h(int height) {
-        gbc.gridheight = height;
-        return this;
-    }
-
-    public GBCBuilder f(int fill) {
-        gbc.fill = fill;
-        return this;
-    }
-
-    public GBCBuilder i(Insets insets) {
-        gbc.insets = insets;
-        return this;
-    }
-
-    public GBCBuilder ipx(int ipadx) {
-        gbc.ipadx = ipadx;
-        return this;
-    }
-
-    public GBCBuilder ipy(int ipady) {
-        gbc.ipady = ipady;
-        return this;
-    }
-
-    public GBCBuilder wx(double weightx) {
-        gbc.weightx = weightx;
-        return this;
-    }
-
-    public GBCBuilder wy(double weighty) {
-        gbc.weighty = weighty;
-        return this;
-    }
-
-    public GridBagConstraints build() {
-        return gbc;
-    }
-
-
-}
