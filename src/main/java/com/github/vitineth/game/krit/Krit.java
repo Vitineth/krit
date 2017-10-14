@@ -10,9 +10,12 @@ import com.github.vitineth.game.krit.utils.ColorUtils;
 import com.github.vitineth.game.krit.utils.LocationUtils;
 import com.github.vitineth.game.krit.utils.MathUtils;
 import com.github.vitineth.game.krit.utils.RandomUtils;
+import javafx.scene.canvas.GraphicsContext;
 
 import java.awt.Color;
+import java.awt.Polygon;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -389,6 +392,40 @@ public class Krit {
 
     public void safetyMapUpdate() {
 
+    }
+
+    public void draw(GraphicsContext context){
+        int leftX = getLocation().getX() * 10;
+        int rightX = leftX + 9;
+        int topY = getLocation().getY() * 10;
+        int bottomY = topY + 9;
+
+        Polygon tribe = new Polygon();
+        tribe.addPoint(leftX, topY);
+        tribe.addPoint(leftX, bottomY);
+        tribe.addPoint(rightX, topY);
+
+        Polygon krit = new Polygon();
+        krit.addPoint(leftX, bottomY);
+        krit.addPoint(rightX, bottomY);
+        krit.addPoint(rightX, topY);
+
+        context.setFill(convertColor(getTribe().getColor()));
+        context.fillPolygon(
+                Arrays.stream(tribe.xpoints).asDoubleStream().toArray(),
+                Arrays.stream(tribe.ypoints).asDoubleStream().toArray(),
+                tribe.npoints
+        );
+        context.setFill(convertColor(getColor()));
+        context.fillPolygon(
+                Arrays.stream(krit.xpoints).asDoubleStream().toArray(),
+                Arrays.stream(krit.ypoints).asDoubleStream().toArray(),
+                krit.npoints
+        );
+    }
+
+    private javafx.scene.paint.Color convertColor(java.awt.Color color) {
+        return new javafx.scene.paint.Color(color.getRed() / 255d, color.getGreen() / 255d, color.getBlue() / 255d, color.getAlpha() / 255d);
     }
 
     public void geneticUpdate() {

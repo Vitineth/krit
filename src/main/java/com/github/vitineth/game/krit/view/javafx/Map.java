@@ -104,35 +104,7 @@ public class Map extends Application {
 
         CopyOnWriteArrayList<Krit> copy = new CopyOnWriteArrayList<>(KritStorage.getCreatures());
         copy.stream().forEach(Krit::update);
-        copy.stream().forEach(k -> {
-            int leftX = k.getLocation().getX() * 10;
-            int rightX = leftX + 9;
-            int topY = k.getLocation().getY() * 10;
-            int bottomY = topY + 9;
-
-            Polygon tribe = new Polygon();
-            tribe.addPoint(leftX, topY);
-            tribe.addPoint(leftX, bottomY);
-            tribe.addPoint(rightX, topY);
-
-            Polygon krit = new Polygon();
-            krit.addPoint(leftX, bottomY);
-            krit.addPoint(rightX, bottomY);
-            krit.addPoint(rightX, topY);
-
-            context.setFill(convertColor(k.getTribe().getColor()));
-            context.fillPolygon(
-                    Arrays.stream(tribe.xpoints).asDoubleStream().toArray(),
-                    Arrays.stream(tribe.ypoints).asDoubleStream().toArray(),
-                    tribe.npoints
-            );
-            context.setFill(convertColor(k.getColor()));
-            context.fillPolygon(
-                    Arrays.stream(krit.xpoints).asDoubleStream().toArray(),
-                    Arrays.stream(krit.ypoints).asDoubleStream().toArray(),
-                    krit.npoints
-            );
-        });
+        copy.stream().forEach(k -> k.draw(context));
 
         context.setFill(new Color(0, 0, 0, 0.5));
         context.fillRect(0, canvas.getHeight() - 32d, canvas.getWidth(), 40);
@@ -177,7 +149,4 @@ public class Map extends Application {
         return getStatusText(count, aggressive, tribeAverage, tribeCount, decayRateAverage, decayFrequencyAverage);
     }
 
-    private Color convertColor(java.awt.Color color) {
-        return new Color(color.getRed() / 255d, color.getGreen() / 255d, color.getBlue() / 255d, color.getAlpha() / 255d);
-    }
 }
