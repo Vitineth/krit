@@ -8,7 +8,9 @@ import com.github.vitineth.game.krit.utils.Size;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -69,7 +71,7 @@ public class KritStorage {
         tribes.add(tribe);
     }
 
-    public static List<Tribe> getTribes(){
+    public static List<Tribe> getTribes() {
         return tribes;
     }
 
@@ -128,4 +130,20 @@ public class KritStorage {
         mappings.remove(krit.getId());
         creatures.remove(krit);
     }
+
+    public static Set<Location> getInRadius(int radius, Location center) {
+        Set<Location> matches = new HashSet<>();
+        for (int x = center.getX() - radius; x < center.getX() + radius; x++) {
+            double y_span = radius * Math.sin(Math.acos((center.getX() - x) / radius));
+            for (double y = center.getY() - y_span; y < center.getY() + y_span; y++) {
+                matches.add(new Location(x, (int) y));
+            }
+        }
+        return matches;
+    }
+
+    public static void main(String[] args){
+        System.out.println(getInRadius(5, new Location(0, 0)));
+    }
+
 }

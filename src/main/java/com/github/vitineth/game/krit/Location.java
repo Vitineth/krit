@@ -56,4 +56,14 @@ public class Location {
     public String toString() {
         return "(" + x + ", " + y + ")";
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Location) {
+            Location l = (Location) obj;
+            return l.x == x && l.y == y;
+        } else {
+            return false;
+        }
+    }
 }

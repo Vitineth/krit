@@ -15,6 +15,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -118,7 +119,7 @@ public class Krit {
         this.separationTurns = 0;
         this.proximityTurns = 0;
 
-        this.safetyMap = new int[KritStorage.getSize().getHeight()][KritStorage.getSize().getWidth()];
+//        this.safetyMap = new int[KritStorage.getSize().getHeight()][KritStorage.getSize().getWidth()];
     }
 
     public void update() {
@@ -278,39 +279,19 @@ public class Krit {
     }
 
     public boolean aggressionUpdate() { //TODO
-
-        HashMap<Krit, Double> distances = new HashMap<>();
-        for (Krit krit : KritStorage.getCreatures()) {
-            if (krit.getTribe() != getTribe()) {
-                int xd = krit.getLocation().getX() - getLocation().getX();
-                int yd = krit.getLocation().getY() - getLocation().getY();
-                distances.put(krit, MathUtils.pythagoras(xd, yd));
-            }
-        }
-
-        double closestDistance = -1;
-        Krit closestKrit = null;
-
-        //noinspection Convert2streamapi
-        for (Krit krit : distances.keySet()) {
-            if (closestKrit == null || distances.get(krit) < closestDistance) {
-                closestDistance = distances.get(krit);
-                closestKrit = krit;
-            }
-        }
-
-        if (closestKrit == null) {
+        List<Location> radius = KritStorage.getInRadius(5, location).stream()
+                .filter(l -> l.getX() > 0 && l.getY() > 0)
+                .filter(l -> l.getX() < KritStorage.getSize().getWidth() && l.getY() < KritStorage.getSize().getHeight())
+                .filter(l -> !KritStorage.isFree(l))
+                .filter(l -> KritStorage.get(l).getTribe() != getTribe())
+                .collect(Collectors.toList());
+        if (radius.size() == 0){
             separationTurns += 1;
             proximityTurns = 0;
             return false;
-        }
-
-        if (closestDistance <= 5) {
+        }else{
             separationTurns = 0;
             proximityTurns += 1;
-        } else {
-            separationTurns += 1;
-            proximityTurns = 0;
         }
 
         if (proximityTurns >= 3) {
@@ -325,11 +306,13 @@ public class Krit {
         int xo = 0;
         int yo = 0;
 
-        if (closestKrit.getLocation().getX() > getLocation().getX()) xo = 1;
-        else if (closestKrit.getLocation().getX() < getLocation().getX()) xo = -1;
+        Krit random = KritStorage.get(radius.get(0));
 
-        if (closestKrit.getLocation().getY() > getLocation().getY()) yo = 1;
-        else if (closestKrit.getLocation().getY() < getLocation().getY()) yo = -1;
+        if (random.getLocation().getX() > getLocation().getX()) xo = 1;
+        else if (random.getLocation().getX() < getLocation().getX()) xo = -1;
+
+        if (random.getLocation().getY() > getLocation().getY()) yo = 1;
+        else if (random.getLocation().getY() < getLocation().getY()) yo = -1;
 
         Location newLocation = new Location(getLocation(), xo, yo);
         if (KritStorage.isFree(newLocation)) {
@@ -338,6 +321,66 @@ public class Krit {
         }
 
         return false;
+
+//        HashMap<Krit, Double> distances = new HashMap<>();
+//        for (Krit krit : KritStorage.getCreatures()) {
+//            if (krit.getTribe() != getTribe()) {
+//                int xd = krit.getLocation().getX() - getLocation().getX();
+//                int yd = krit.getLocation().getY() - getLocation().getY();
+//                distances.put(krit, MathUtils.pythagoras(xd, yd));
+//            }
+//        }
+//
+//        double closestDistance = -1;
+//        Krit closestKrit = null;
+//
+//        //noinspection Convert2streamapi
+//        for (Krit krit : distances.keySet()) {
+//            if (closestKrit == null || distances.get(krit) < closestDistance) {
+//                closestDistance = distances.get(krit);
+//                closestKrit = krit;
+//            }
+//        }
+//
+//        if (closestKrit == null) {
+//            separationTurns += 1;
+//            proximityTurns = 0;
+//            return false;
+//        }
+//
+//        if (closestDistance <= 5) {
+//            separationTurns = 0;
+//            proximityTurns += 1;
+//        } else {
+//            separationTurns += 1;
+//            proximityTurns = 0;
+//        }
+//
+//        if (proximityTurns >= 3) {
+//            // TODO: Skipping tribe check
+//            aggressive = true;
+//        } else if (separationTurns >= 3) {
+//            aggressive = false;
+//        }
+//
+//        if (!aggressive) return false;
+//
+//        int xo = 0;
+//        int yo = 0;
+//
+//        if (closestKrit.getLocation().getX() > getLocation().getX()) xo = 1;
+//        else if (closestKrit.getLocation().getX() < getLocation().getX()) xo = -1;
+//
+//        if (closestKrit.getLocation().getY() > getLocation().getY()) yo = 1;
+//        else if (closestKrit.getLocation().getY() < getLocation().getY()) yo = -1;
+//
+//        Location newLocation = new Location(getLocation(), xo, yo);
+//        if (KritStorage.isFree(newLocation)) {
+//            setLocation(newLocation);
+//            return true;
+//        }
+//
+//        return false;
     }
 
     public void safetyCalculation() {
