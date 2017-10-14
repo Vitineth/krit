@@ -10,10 +10,13 @@ import com.github.vitineth.game.krit.utils.ColorUtils;
 import com.github.vitineth.game.krit.utils.LocationUtils;
 import com.github.vitineth.game.krit.utils.MathUtils;
 import com.github.vitineth.game.krit.utils.RandomUtils;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.canvas.GraphicsContext;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Polygon;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -84,6 +87,8 @@ public class Krit {
     private int updateCount;
     private int separationTurns;
     private int proximityTurns;
+    private BufferedImage image;
+    private Graphics graphics;
 
     public Krit(Location location, double health, double decayRate, int decayFrequency, Sex sex, Color color, Tribe tribe, Krit mother, Krit father, List<Gene> genetics) {
         id = UUID.randomUUID();
@@ -122,10 +127,17 @@ public class Krit {
         this.separationTurns = 0;
         this.proximityTurns = 0;
 
+        image = new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB);
+        graphics = image.getGraphics();
+        graphics.setColor(Color.WHITE);
+        graphics.fillRect(0, 0, 10, 10);
+
 //        this.safetyMap = new int[KritStorage.getSize().getHeight()][KritStorage.getSize().getWidth()];
     }
 
     public void update() {
+        drawBase();
+
         this.updateCount += 1;
         if (this.updateCount >= 20000) this.updateCount = 0;
 
@@ -324,104 +336,33 @@ public class Krit {
         }
 
         return false;
-
-//        HashMap<Krit, Double> distances = new HashMap<>();
-//        for (Krit krit : KritStorage.getCreatures()) {
-//            if (krit.getTribe() != getTribe()) {
-//                int xd = krit.getLocation().getX() - getLocation().getX();
-//                int yd = krit.getLocation().getY() - getLocation().getY();
-//                distances.put(krit, MathUtils.pythagoras(xd, yd));
-//            }
-//        }
-//
-//        double closestDistance = -1;
-//        Krit closestKrit = null;
-//
-//        //noinspection Convert2streamapi
-//        for (Krit krit : distances.keySet()) {
-//            if (closestKrit == null || distances.get(krit) < closestDistance) {
-//                closestDistance = distances.get(krit);
-//                closestKrit = krit;
-//            }
-//        }
-//
-//        if (closestKrit == null) {
-//            separationTurns += 1;
-//            proximityTurns = 0;
-//            return false;
-//        }
-//
-//        if (closestDistance <= 5) {
-//            separationTurns = 0;
-//            proximityTurns += 1;
-//        } else {
-//            separationTurns += 1;
-//            proximityTurns = 0;
-//        }
-//
-//        if (proximityTurns >= 3) {
-//            // TODO: Skipping tribe check
-//            aggressive = true;
-//        } else if (separationTurns >= 3) {
-//            aggressive = false;
-//        }
-//
-//        if (!aggressive) return false;
-//
-//        int xo = 0;
-//        int yo = 0;
-//
-//        if (closestKrit.getLocation().getX() > getLocation().getX()) xo = 1;
-//        else if (closestKrit.getLocation().getX() < getLocation().getX()) xo = -1;
-//
-//        if (closestKrit.getLocation().getY() > getLocation().getY()) yo = 1;
-//        else if (closestKrit.getLocation().getY() < getLocation().getY()) yo = -1;
-//
-//        Location newLocation = new Location(getLocation(), xo, yo);
-//        if (KritStorage.isFree(newLocation)) {
-//            setLocation(newLocation);
-//            return true;
-//        }
-//
-//        return false;
     }
 
-    public void safetyCalculation() {
-
-    }
-
-    public void safetyMapUpdate() {
-
-    }
-
-    public void draw(GraphicsContext context){
+    @SuppressWarnings("Duplicates")
+    public void drawBase(){
         int leftX = getLocation().getX() * 10;
         int rightX = leftX + 9;
         int topY = getLocation().getY() * 10;
         int bottomY = topY + 9;
 
         Polygon tribe = new Polygon();
-        tribe.addPoint(leftX, topY);
-        tribe.addPoint(leftX, bottomY);
-        tribe.addPoint(rightX, topY);
+        tribe.addPoint(0, 0);
+        tribe.addPoint(0, 10);
+        tribe.addPoint(10, 0);
 
         Polygon krit = new Polygon();
-        krit.addPoint(leftX, bottomY);
-        krit.addPoint(rightX, bottomY);
-        krit.addPoint(rightX, topY);
+        krit.addPoint(0, 10);
+        krit.addPoint(10, 10);
+        krit.addPoint(10, 0);
 
-        context.setFill(convertColor(getTribe().getColor()));
-        context.fillPolygon(
-                Arrays.stream(tribe.xpoints).asDoubleStream().toArray(),
-                Arrays.stream(tribe.ypoints).asDoubleStream().toArray(),
-                tribe.npoints
-        );
-        context.setFill(convertColor(getColor()));
-        context.fillPolygon(
-                Arrays.stream(krit.xpoints).asDoubleStream().toArray(),
-                Arrays.stream(krit.ypoints).asDoubleStream().toArray(),
-                krit.npoints
-        );
+        graphics.setColor(getTribe().getColor());
+        graphics.fillPolygon(tribe);
+        graphics.setColor(getColor());
+        graphics.fillPolygon(krit);
+    }
+
+    public void draw(GraphicsContext context){
+        context.drawImage(SwingFXUtils.toFXImage(image, null), getLocation().getX() * 10, getLocation().getY() * 10);
     }
 
     private javafx.scene.paint.Color convertColor(java.awt.Color color) {
@@ -622,6 +563,14 @@ public class Krit {
 
     public void setProximityTurns(int proximityTurns) {
         this.proximityTurns = proximityTurns;
+    }
+
+    public BufferedImage getImage() {
+        return image;
+    }
+
+    public Graphics getGraphics() {
+        return graphics;
     }
 
     public enum Sex {
