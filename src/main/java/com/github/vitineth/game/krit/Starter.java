@@ -9,6 +9,12 @@ import com.github.vitineth.game.krit.utils.RandomUtils;
 import com.github.vitineth.game.krit.utils.Size;
 import com.github.vitineth.game.krit.view.InspectView;
 import com.github.vitineth.game.krit.view.MapView;
+import com.github.vitineth.game.krit.view.javafx.KritManager;
+import com.github.vitineth.game.krit.view.javafx.Map;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
+import javafx.stage.Stage;
 
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
@@ -31,7 +37,10 @@ import java.util.List;
  */
 public class Starter {
 
-    public static void initialize(){
+    private static Stage managerStage;
+    private static Stage mapStage;
+
+    public static void initialize() {
         // These are the initial sizes of the grid that the Krits live on. These are submitted to the storage in
         // order to configure it to the right size but are defined here as we use them in a moment to generate the
         // krits and tribes
@@ -103,23 +112,23 @@ public class Starter {
         try {
             // Set the theme. This allows the user to pick from the installed looks and feels as well as the installed
             // darcula version. This is a completely needless addition but I thought it was quite cool.
-            try {
-                String[] s = new String[UIManager.getInstalledLookAndFeels().length + 1];
-                for (int i = 0; i < s.length - 1; i++) {
-                    s[i + 1] = UIManager.getInstalledLookAndFeels()[i].getName();
-                }
-                s[0] = "Darcula";
-
-                System.out.println(new UIManager.LookAndFeelInfo("Darcula", "com.bulenkov.darcula.DarculaLaf"));
-                int laf = JOptionPane.showOptionDialog(null, "Select LAF", "Select LAF", JOptionPane.OK_CANCEL_OPTION, 0, null, s, s[0]);
-                if (laf == 0) {
-                    UIManager.setLookAndFeel(new DarculaLaf());
-                } else {
-                    UIManager.setLookAndFeel(UIManager.getInstalledLookAndFeels()[laf - 1].getClassName());
-                }
-            } catch (UnsupportedLookAndFeelException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                String[] s = new String[UIManager.getInstalledLookAndFeels().length + 1];
+//                for (int i = 0; i < s.length - 1; i++) {
+//                    s[i + 1] = UIManager.getInstalledLookAndFeels()[i].getName();
+//                }
+//                s[0] = "Darcula";
+//
+//                System.out.println(new UIManager.LookAndFeelInfo("Darcula", "com.bulenkov.darcula.DarculaLaf"));
+//                int laf = JOptionPane.showOptionDialog(null, "Select LAF", "Select LAF", JOptionPane.OK_CANCEL_OPTION, 0, null, s, s[0]);
+//                if (laf == 0) {
+//                    UIManager.setLookAndFeel(new DarculaLaf());
+//                } else {
+//                    UIManager.setLookAndFeel(UIManager.getInstalledLookAndFeels()[laf - 1].getClassName());
+//                }
+//            } catch (UnsupportedLookAndFeelException e) {
+//                e.printStackTrace();
+//            }
 
             // Set up the name storage to load the entire names file and configure the storage values that we need to
             // make sure that the names are good
@@ -128,11 +137,34 @@ public class Starter {
             initialize();
 
             // Finally, we construct the inspect view with which the user can browse the creatues
-            InspectView view = new InspectView();
+//            InspectView view = new InspectView();
             // Initially select the first ever krit
-            view.update(KritStorage.getCreatures().get(0));
+//            view.update(KritStorage.getCreatures().get(0));
             // And launch the map window which will start the rendering process and set the krits off living.
-            new Thread(new MapView(view), "Map Viewer").start();
+//            new Thread(new MapView(new KritManager()), "Map Viewer").start();
+            new JFXPanel();
+            KritManager manager = new KritManager();
+            Platform.runLater(() -> {
+                managerStage = new Stage();
+                managerStage.setWidth(575);
+                managerStage.setHeight(920);
+                managerStage.setScene(manager.alternateStart());
+                managerStage.setOnCloseRequest(e -> {
+                    mapStage.close();
+                });
+                managerStage.show();
+            });
+            Platform.runLater(() -> {
+                Map map = new Map(manager);
+                mapStage = new Stage();
+                mapStage.setScene(map.alternateStart());
+                mapStage.setOnCloseRequest(e -> {
+                    managerStage.close();
+                });
+                mapStage.show();
+
+//                Platform.runLater(map);
+            });
         } catch (Exception e) {
             if (System.getProperty("idea.launcher.port") != null) {
                 e.printStackTrace();

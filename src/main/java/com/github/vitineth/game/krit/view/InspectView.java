@@ -107,6 +107,7 @@ public class InspectView extends JFrame {
         reset.setText("Restart");
 
         return p;
+
     }
 
     public JPanel setupInspect() {

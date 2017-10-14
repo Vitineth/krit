@@ -2,6 +2,7 @@ package com.github.vitineth.game.krit.view;
 
 import com.github.vitineth.game.krit.Krit;
 import com.github.vitineth.game.krit.storage.KritStorage;
+import com.github.vitineth.game.krit.view.javafx.KritManager;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -37,12 +38,13 @@ public class MapView extends Canvas implements Runnable, MouseListener {
     int textY = 0;
     private JFrame frame;
     private boolean running;
-    private InspectView view;
+//    private InspectView view;
+    private KritManager manager;
     private FontRenderContext frc = new FontRenderContext(null, true, true);
     private DecimalFormat decimalFormat = new DecimalFormat("00000.00");
 
-    public MapView(InspectView view) {
-        this.view = view;
+    public MapView(KritManager manager) {
+        this.manager = manager;
 
         setPreferredSize(new Dimension(KritStorage.getSize().getWidth() * 10, KritStorage.getSize().getHeight() * 10));
 
@@ -51,7 +53,7 @@ public class MapView extends Canvas implements Runnable, MouseListener {
         frame.setSize(KritStorage.getSize().getWidth() * 10, KritStorage.getSize().getHeight() * 10);
         frame.setLayout(new BorderLayout());
         frame.add(this, BorderLayout.CENTER);
-        frame.setLocation(view.getX() + view.getWidth(), view.getY());
+//        frame.setLocation(viem.getX() + view.getWidth(), view.getY());
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         frame.addMouseListener(this);
@@ -76,13 +78,12 @@ public class MapView extends Canvas implements Runnable, MouseListener {
     public void run() {
         long last = System.currentTimeMillis();
         while (running) {
-            if (!view.isPaused())
+            if (!manager.isFrozen())
                 if (System.currentTimeMillis() - last >= 500) {
-                    if (view.isResetCalled()) {
-                        view.resetClear();
+                    if (manager.isResetTriggered()) {
+                        manager.resetClear();
                     } else {
                         update();
-                        view.update();
                     }
                 }
         }
@@ -115,6 +116,8 @@ public class MapView extends Canvas implements Runnable, MouseListener {
         }
         double decayRateAverage = totalDecay / count;
         double decayFrequencyAverage = totalFrequency / count;
+
+        manager.update(aggressive, count, decayRateAverage, decayFrequencyAverage);
 
         return getStatusText(count, aggressive, tribeAverage, tribeCount, decayRateAverage, decayFrequencyAverage);
     }
@@ -186,7 +189,7 @@ public class MapView extends Canvas implements Runnable, MouseListener {
         int y = (int) ((double) e.getY() / 10d);
 
         if (!KritStorage.isFree(x, y)) {
-            view.update(KritStorage.get(x, y));
+            manager.select(KritStorage.get(x, y));
         }
     }
 
