@@ -39,7 +39,13 @@ In an attempt to change how aggression works, tribes will begin developing relat
 `TODO(@vitineth): 2017/10/12 10:15`
 
 ## Aggression Exemptions
-`TODO(@vitineth): 2017/10/12 10:15`
+Mothers and Fathers should avoid attacking either each other or their children when becoming aggressive. When finding potential enemies to either attack or become aggressive with, there should be an exception for these types:
+
+``` java
+possibilities.filter(krit -> krit.getID() != mate.getID()).filter(krit -> sex == Sex.MALE ? this.mate.children.indexOf(krit) == 0 : this.children.indexOf(krit) == 0)
+```
+
+This gives a general idea of the steps required to perform this procedure. First we filter out any that are the mate of the krit, and then secondly if the current krit is male, we filter out any possibilities that are listed within their mates children or if they are female we check that it is not in their own children.
 
 ## Family Trees
 `TODO(@vitineth): 2017/10/12 10:15`
